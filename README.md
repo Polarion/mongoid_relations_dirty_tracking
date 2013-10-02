@@ -1,24 +1,39 @@
-# MongoidTrackEmbeddedChanges
+# Mongoid::TrackEmbeddedChanges
 
-TODO: Write a gem description
+Mongoid extension for tracking changes on embedded documents
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'mongoid_track_embedded_changes'
+    gem 'mongoid_track_embedded_changes', github: 'versative/mongoid_track_embedded_changes'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install mongoid_track_embedded_changes
-
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+class SampleDocument
+  include Mongoid::Document
+  include Mongoid::TrackEmbeddedChanges
+
+  embeds_one  :foo
+  embeds_many :bars
+end
+
+doc = SampleDocument.create
+doc.foo = Foo.new
+doc.bars << Bar.new
+
+doc.embedded_changed?   # => true
+doc.embedded_changes    # => {"foo" => [nil, {"_id"=>"524c35ad1ac1c23084000040"}], "bars" => [nil, [{"_id"=>"524c35ad1ac1c23084000083"}]]}
+
+doc.save
+doc.embedded_changed?   # => false
+doc.embedded_changes    # => {}
+```
 
 ## Contributing
 

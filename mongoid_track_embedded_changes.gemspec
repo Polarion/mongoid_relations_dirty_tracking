@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.version       = Mongoid::TrackEmbeddedChanges::VERSION
   spec.authors       = ["David Sevcik"]
   spec.email         = ["david.sevcik@gmail.com"]
-  spec.description   = "Adds to mongoid support for tracking changes on embedded documents"
-  spec.summary       = "Adds to mongoid support for tracking changes on embedded documents"
+  spec.description   = "Mongoid extension for tracking changes on embedded documents"
+  spec.summary       = "Mongoid extension for tracking changes on embedded documents"
   spec.homepage      = "http://github.com/versative/mongoid_track_embedded_changes"
   spec.license       = "MIT"
 
