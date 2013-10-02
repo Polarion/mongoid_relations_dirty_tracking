@@ -17,6 +17,8 @@ class TestEmbeddedDocument
   include Mongoid::Document
 
   embedded_in :test_document
+
+  field :title, type: String
 end
 
 

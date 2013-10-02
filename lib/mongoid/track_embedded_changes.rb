@@ -13,8 +13,10 @@ module Mongoid
     def embedded_changes
       changes = {}
       @embedded_shadow.each_pair do |name, shadow_content|
-        if send(name) != shadow_content
-          changes[name] = [shadow_content, send(name)]
+        embedded_attributes = send(name)
+        embedded_attributes &&= send(name).is_a?(Array) ? send(name).map(&:attributes) : send(name).attributes
+        if embedded_attributes != shadow_content
+          changes[name] = [shadow_content, embedded_attributes]
         end
       end
       changes
@@ -36,9 +38,9 @@ module Mongoid
       @embedded_shadow = {}
       relations.each_pair do |name, options|
         if options[:relation] == Mongoid::Relations::Embedded::One
-          @embedded_shadow[name] = send(name)
+          @embedded_shadow[name] = send(name) && send(name).attributes.clone
         elsif options[:relation] == Mongoid::Relations::Embedded::Many
-          @embedded_shadow[name] = send(name) && send(name).clone
+          @embedded_shadow[name] = send(name) && send(name).map {|child| child.attributes.clone }
         end
       end
     end
