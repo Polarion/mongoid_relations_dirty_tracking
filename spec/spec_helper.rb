@@ -9,14 +9,26 @@ class TestDocument
   include Mongoid::Document
   include Mongoid::TrackEmbeddedChanges
 
-  embeds_one  :one_document,    class_name: 'TestDocument'
-  embeds_many :many_documents,  class_name: 'TestDocument'
+  embeds_one  :one_document,    class_name: 'TestEmbeddedDocument'
+  embeds_many :many_documents,  class_name: 'TestEmbeddedDocument'
+
+  has_one     :one_related,     class_name: 'TestRelatedDocument'
+  has_many    :many_related,    class_name: 'TestRelatedDocument'
 end
 
 class TestEmbeddedDocument
   include Mongoid::Document
 
   embedded_in :test_document
+
+  field :title, type: String
+end
+
+class TestRelatedDocument
+  include Mongoid::Document
+  include Mongoid::TrackEmbeddedChanges
+
+  belongs_to :test_document, inverse_of: :one_related
 
   field :title, type: String
 end

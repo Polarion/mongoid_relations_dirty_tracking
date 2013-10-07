@@ -1,52 +1,73 @@
 require 'mongoid'
 require 'active_support/concern'
 require 'active_support/core_ext/module/aliasing'
+require 'pry'
 
 module Mongoid
   module TrackEmbeddedChanges
     extend ActiveSupport::Concern
 
     included do
-      after_initialize  :store_embedded_shadow
-      after_save        :store_embedded_shadow
+      after_initialize  :store_relations_shadow
+      after_save        :store_relations_shadow
 
-      alias_method_chain :changes, :embedded
-      alias_method_chain :changed?, :embedded
+      alias_method_chain :changes, :relations
+      alias_method_chain :changed?, :relations
     end
 
-    def store_embedded_shadow
-      @embedded_shadow = {}
-      relations.each_pair do |name, options|
-        if options[:relation] == Mongoid::Relations::Embedded::One
-          @embedded_shadow[name] = send(name) && send(name).attributes.clone
-        elsif options[:relation] == Mongoid::Relations::Embedded::Many
-          @embedded_shadow[name] = send(name) && send(name).map {|child| child.attributes.clone }
-        end
+    def store_relations_shadow
+      @relations_shadow = {}
+      relations.keys.each do |rel_name|
+        @relations_shadow[rel_name] = tracked_relation_attributes(rel_name) if track_relation?(rel_name)
       end
     end
 
-    def embedded_changes
+    def relation_changes
       changes = {}
-      @embedded_shadow.each_pair do |name, shadow_content|
-        embedded_attributes = send(name)
-        embedded_attributes &&= send(name).is_a?(Array) ? send(name).map(&:attributes) : send(name).attributes
-        if embedded_attributes != shadow_content
-          changes[name] = [shadow_content, embedded_attributes]
+      @relations_shadow.each_pair do |rel_name, shadow_values|
+        current_values = tracked_relation_attributes(rel_name)
+        if current_values != shadow_values
+          changes[rel_name] = [shadow_values, current_values]
         end
       end
       changes
     end
 
-    def embedded_changed?
-      !embedded_changes.empty?
+    def relations_changed?
+      !relation_changes.empty?
     end
 
-    def changed_with_embedded?
-      changed_without_embedded? or embedded_changed?
+    def changed_with_relations?
+      changed_without_relations? or relations_changed?
     end
 
-    def changes_with_embedded
-      (changes_without_embedded || {}).merge embedded_changes
+    def changes_with_relations
+      (changes_without_relations || {}).merge relation_changes
+    end
+
+    def track_relation?(rel_name)
+      [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
+      Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
+      Mongoid::Relations::Referenced::In].include? relations[rel_name].try(:relation)
+    end
+
+    def tracked_relation_attributes(rel_name)
+      rel_name = rel_name.to_s
+      values = nil
+      if meta = relations[rel_name]
+        values = if meta.relation == Mongoid::Relations::Embedded::One
+          send(rel_name) && send(rel_name).attributes.clone
+        elsif meta.relation == Mongoid::Relations::Embedded::Many
+          send(rel_name) && send(rel_name).map {|child| child.attributes.clone }
+        elsif meta.relation == Mongoid::Relations::Referenced::One
+          send(rel_name) && { "#{meta.key}" => send(rel_name)[meta.key] }
+        elsif meta.relation == Mongoid::Relations::Referenced::Many
+          send("#{rel_name}_ids").map {|id| { "#{meta.key}" => id } }
+        elsif meta.relation == Mongoid::Relations::Referenced::In
+          send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
+        end
+      end
+      values
     end
   end
 end
