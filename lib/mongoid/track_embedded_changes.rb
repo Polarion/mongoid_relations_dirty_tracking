@@ -1,5 +1,6 @@
 require 'mongoid'
 require 'active_support/concern'
+require 'active_support/core_ext/module/aliasing'
 
 module Mongoid
   module TrackEmbeddedChanges
@@ -8,6 +9,20 @@ module Mongoid
     included do
       after_initialize  :store_embedded_shadow
       after_save        :store_embedded_shadow
+
+      alias_method_chain :changes, :embedded
+      alias_method_chain :changed?, :embedded
+    end
+
+    def store_embedded_shadow
+      @embedded_shadow = {}
+      relations.each_pair do |name, options|
+        if options[:relation] == Mongoid::Relations::Embedded::One
+          @embedded_shadow[name] = send(name) && send(name).attributes.clone
+        elsif options[:relation] == Mongoid::Relations::Embedded::Many
+          @embedded_shadow[name] = send(name) && send(name).map {|child| child.attributes.clone }
+        end
+      end
     end
 
     def embedded_changes
@@ -27,22 +42,11 @@ module Mongoid
     end
 
     def changed_with_embedded?
-      changed? or embedded_changed?
+      changed_without_embedded? or embedded_changed?
     end
 
     def changes_with_embedded
-      (changes || {}).merge embedded_changes
-    end
-
-    def store_embedded_shadow
-      @embedded_shadow = {}
-      relations.each_pair do |name, options|
-        if options[:relation] == Mongoid::Relations::Embedded::One
-          @embedded_shadow[name] = send(name) && send(name).attributes.clone
-        elsif options[:relation] == Mongoid::Relations::Embedded::Many
-          @embedded_shadow[name] = send(name) && send(name).map {|child| child.attributes.clone }
-        end
-      end
+      (changes_without_embedded || {}).merge embedded_changes
     end
   end
 end

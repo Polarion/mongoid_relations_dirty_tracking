@@ -15,7 +15,7 @@ describe Mongoid::TrackEmbeddedChanges do
       subject.one_document = @embedded_doc
     end
 
-    its(:changed?)                { should be_false }
+    its(:changed?)                { should be_true }
     its(:children_changed?)       { should be_false }
     its(:embedded_changed?)       { should be_true }
     its(:changed_with_embedded?)  { should be_true }
@@ -37,7 +37,7 @@ describe Mongoid::TrackEmbeddedChanges do
       subject.one_document = nil
     end
 
-    its(:changed?)                { should be_false }
+    its(:changed?)                { should be_true }
     its(:children_changed?)       { should be_false }
     its(:embedded_changed?)       { should be_true }
     its(:changed_with_embedded?)  { should be_true }
@@ -57,7 +57,7 @@ describe Mongoid::TrackEmbeddedChanges do
       subject.many_documents << @embedded_doc
     end
 
-    its(:changed?)                { should be_false }
+    its(:changed?)                { should be_true }
     its(:children_changed?)       { should be_false }
     its(:embedded_changed?)       { should be_true }
     its(:changed_with_embedded?)  { should be_true }
@@ -79,7 +79,7 @@ describe Mongoid::TrackEmbeddedChanges do
       subject.many_documents.delete @embedded_doc
     end
 
-    its(:changed?)                { should be_false }
+    its(:changed?)                { should be_true }
     its(:children_changed?)       { should be_false }
     its(:embedded_changed?)       { should be_true }
     its(:changed_with_embedded?)  { should be_true }

@@ -21,18 +21,25 @@ class SampleDocument
 
   embeds_one  :foo
   embeds_many :bars
+
+  field :title, type: String
 end
 
 doc = SampleDocument.create
 doc.foo = Foo.new
 doc.bars << Bar.new
+doc.title = 'New title'
 
 doc.embedded_changed?   # => true
 doc.embedded_changes    # => {"foo" => [nil, {"_id"=>"524c35ad1ac1c23084000040"}], "bars" => [nil, [{"_id"=>"524c35ad1ac1c23084000083"}]]}
+doc.changed?            # => true
+doc.changes             # => {"title" => [nil, "New title"], "foo" => [nil, {"_id"=>"524c35ad1ac1c23084000040"}], "bars" => [nil, [{"_id"=>"524c35ad1ac1c23084000083"}]]}
 
 doc.save
 doc.embedded_changed?   # => false
 doc.embedded_changes    # => {}
+doc.changed?            # => false
+doc.changes             # => {}
 ```
 
 ## Contributing
