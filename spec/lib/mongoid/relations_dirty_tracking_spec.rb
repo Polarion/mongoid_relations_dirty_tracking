@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pry'
 
 describe Mongoid::RelationsDirtyTracking do
   subject { TestDocument.create }

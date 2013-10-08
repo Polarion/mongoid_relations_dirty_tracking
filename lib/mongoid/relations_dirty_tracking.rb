@@ -1,7 +1,6 @@
 require 'mongoid'
 require 'active_support/concern'
 require 'active_support/core_ext/module/aliasing'
-require 'pry'
 
 module Mongoid
   module RelationsDirtyTracking
