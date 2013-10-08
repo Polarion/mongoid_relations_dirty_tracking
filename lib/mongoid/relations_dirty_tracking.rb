@@ -61,7 +61,7 @@ module Mongoid
         elsif meta.relation == Mongoid::Relations::Referenced::One
           send(rel_name) && { "#{meta.key}" => send(rel_name)[meta.key] }
         elsif meta.relation == Mongoid::Relations::Referenced::Many
-          send("#{rel_name}_ids").map {|id| { "#{meta.key}" => id } }
+          send("#{rel_name.singularize}_ids").map {|id| { "#{meta.key}" => id } }
         elsif meta.relation == Mongoid::Relations::Referenced::In
           send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
         end
