@@ -4,7 +4,7 @@ require 'active_support/core_ext/module/aliasing'
 require 'pry'
 
 module Mongoid
-  module TrackEmbeddedChanges
+  module RelationsDirtyTracking
     extend ActiveSupport::Concern
 
     included do

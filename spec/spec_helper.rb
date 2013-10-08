@@ -1,13 +1,13 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'mongoid'
-require 'mongoid/track_embedded_changes'
+require 'mongoid/relations_dirty_tracking'
 
 require 'rspec'
 
 class TestDocument
   include Mongoid::Document
-  include Mongoid::TrackEmbeddedChanges
+  include Mongoid::RelationsDirtyTracking
 
   embeds_one  :one_document,    class_name: 'TestEmbeddedDocument'
   embeds_many :many_documents,  class_name: 'TestEmbeddedDocument'
@@ -26,7 +26,7 @@ end
 
 class TestRelatedDocument
   include Mongoid::Document
-  include Mongoid::TrackEmbeddedChanges
+  include Mongoid::RelationsDirtyTracking
 
   belongs_to :test_document, inverse_of: :one_related
 
@@ -35,7 +35,7 @@ end
 
 
 Mongoid.configure do |config|
-  config.connect_to('mongoid_track_embedded_changes_test')
+  config.connect_to('mongoid_relations_dirty_tracking_test')
 end
 
 RSpec.configure do |config|

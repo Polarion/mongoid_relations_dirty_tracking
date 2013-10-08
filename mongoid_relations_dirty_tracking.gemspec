@@ -1,14 +1,14 @@
 # coding: utf-8
-require File.expand_path('../lib/mongoid/track_embedded_changes/version', __FILE__)
+require File.expand_path('../lib/mongoid/relations_dirty_tracking/version', __FILE__)
 
 Gem::Specification.new do |spec|
-  spec.name          = "mongoid_track_embedded_changes"
-  spec.version       = Mongoid::TrackEmbeddedChanges::VERSION
+  spec.name          = "mongoid_relations_dirty_tracking"
+  spec.version       = Mongoid::RelationsDirtyTracking::VERSION
   spec.authors       = ["David Sevcik"]
   spec.email         = ["david.sevcik@gmail.com"]
-  spec.description   = "Mongoid extension for tracking changes on embedded documents"
-  spec.summary       = "Mongoid extension for tracking changes on embedded documents"
-  spec.homepage      = "http://github.com/versative/mongoid_track_embedded_changes"
+  spec.description   = "Mongoid extension for tracking changes on document relations"
+  spec.summary       = "Mongoid extension for tracking changes on document relations"
+  spec.homepage      = "http://github.com/versative/relations_dirty_tracking"
   spec.license       = "MIT"
 
   spec.add_runtime_dependency 'activesupport', '~> 3.0'

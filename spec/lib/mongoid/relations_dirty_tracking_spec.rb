@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'pry'
 
-describe Mongoid::TrackEmbeddedChanges do
+describe Mongoid::RelationsDirtyTracking do
   subject { TestDocument.create }
 
   its(:changed?)                { should be_false }
