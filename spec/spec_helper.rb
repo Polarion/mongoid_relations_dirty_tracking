@@ -33,6 +33,26 @@ class TestRelatedDocument
   field :title, type: String
 end
 
+class TestDocumentWithOnlyOption
+  include Mongoid::Document
+  include Mongoid::RelationsDirtyTracking
+
+  embeds_many :many_documents,  class_name: 'TestEmbeddedDocument'
+  has_one     :one_related,     class_name: 'TestRelatedDocument'
+
+  relations_dirty_tracking only: :many_documents
+end
+
+class TestDocumentWithExceptOption
+  include Mongoid::Document
+  include Mongoid::RelationsDirtyTracking
+
+  embeds_many :many_documents,  class_name: 'TestEmbeddedDocument'
+  has_one     :one_related,     class_name: 'TestRelatedDocument'
+
+  relations_dirty_tracking except: :many_documents
+end
+
 
 Mongoid.configure do |config|
   config.connect_to('mongoid_relations_dirty_tracking_test')

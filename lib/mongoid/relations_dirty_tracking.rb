@@ -14,12 +14,14 @@ module Mongoid
       alias_method_chain :changed?, :relations
     end
 
+
     def store_relations_shadow
       @relations_shadow = {}
-      relations.keys.each do |rel_name|
-        @relations_shadow[rel_name] = tracked_relation_attributes(rel_name) if track_relation?(rel_name)
+      self.class.tracked_relations.each do |rel_name|
+        @relations_shadow[rel_name] = tracked_relation_attributes(rel_name)
       end
     end
+
 
     def relation_changes
       changes = {}
@@ -32,23 +34,21 @@ module Mongoid
       changes
     end
 
+
     def relations_changed?
       !relation_changes.empty?
     end
+
 
     def changed_with_relations?
       changed_without_relations? or relations_changed?
     end
 
+
     def changes_with_relations
       (changes_without_relations || {}).merge relation_changes
     end
 
-    def track_relation?(rel_name)
-      [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
-      Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
-      Mongoid::Relations::Referenced::In].include? relations[rel_name].try(:relation)
-    end
 
     def tracked_relation_attributes(rel_name)
       rel_name = rel_name.to_s
@@ -67,6 +67,33 @@ module Mongoid
         end
       end
       values
+    end
+
+
+    module ClassMethods
+
+      def relations_dirty_tracking(options = {})
+        options[:only]    = [options[:only]].flatten if options[:only]
+        options[:except]  = [options[:except]].flatten if options[:except]
+        @relations_dirty_tracking_options = options
+      end
+
+
+      def track_relation?(rel_name)
+        options = @relations_dirty_tracking_options || {}
+        to_track = (options[:only].nil? && options[:except].nil?) \
+          || (options[:only] && options[:only].include?(rel_name.to_sym)) \
+          || (options[:except] && !options[:except].include?(rel_name.to_sym))
+
+        to_track && [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
+          Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
+          Mongoid::Relations::Referenced::In].include?(relations[rel_name.to_s].try(:relation))
+      end
+
+
+      def tracked_relations
+        @tracked_relations ||= relations.keys.select {|rel_name| track_relation?(rel_name) }
+      end
     end
   end
 end

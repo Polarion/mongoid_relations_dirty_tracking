@@ -284,4 +284,21 @@ describe Mongoid::RelationsDirtyTracking do
       end
     end
   end
+
+
+  describe ".track_relation?" do
+    context "with only options" do
+      it "do tracks only specified relations" do
+        expect(TestDocumentWithOnlyOption.track_relation? :many_documents).to be_true
+        expect(TestDocumentWithOnlyOption.track_relation? :one_related).to be_false
+      end
+    end
+
+    context "with except options" do
+      it "do no track excluded relations" do
+        expect(TestDocumentWithExceptOption.track_relation? :many_documents).to be_false
+        expect(TestDocumentWithExceptOption.track_relation? :one_related).to be_true
+      end
+    end
+  end
 end
