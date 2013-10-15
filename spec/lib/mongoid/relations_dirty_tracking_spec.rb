@@ -296,8 +296,32 @@ describe Mongoid::RelationsDirtyTracking do
 
     context "with except options" do
       it "do no track excluded relations" do
-        expect(TestDocumentWithExceptOption.track_relation? :many_documents).to be_false
-        expect(TestDocumentWithExceptOption.track_relation? :one_related).to be_true
+        expect(TestDocumentWithExceptOption.track_relation? 'many_documents').to be_false
+        expect(TestDocumentWithExceptOption.track_relation? 'one_related').to be_true
+      end
+    end
+  end
+
+
+  describe "by befault the versions relation is not tracked" do
+    context "when not called 'relations_dirty_tracking'" do
+      it "'versions' is excluded from tracing" do
+        expect(Class.new(TestDocument).relations_dirty_tracking_options[:except]).to include('versions')
+      end
+    end
+
+    context "when called 'relations_dirty_tracking' with only" do
+      it "'versions' is excluded from tracing" do
+        klass = Class.new(TestDocument) { relations_dirty_tracking(only: 'foobar') }
+        expect(klass.relations_dirty_tracking_options[:except]).to include('versions')
+      end
+    end
+
+    context "when called 'relations_dirty_tracking' with except" do
+      it "'versions' is excluded from tracing" do
+        klass = Class.new(TestDocument) { relations_dirty_tracking(except: 'foobar') }
+        expect(klass.relations_dirty_tracking_options[:except]).to include('versions')
+        expect(klass.relations_dirty_tracking_options[:except]).to include('foobar')
       end
     end
   end

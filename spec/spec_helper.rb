@@ -50,7 +50,7 @@ class TestDocumentWithExceptOption
   embeds_many :many_documents,  class_name: 'TestEmbeddedDocument'
   has_one     :one_related,     class_name: 'TestRelatedDocument'
 
-  relations_dirty_tracking except: :many_documents
+  relations_dirty_tracking except: 'many_documents'
 end
 
 

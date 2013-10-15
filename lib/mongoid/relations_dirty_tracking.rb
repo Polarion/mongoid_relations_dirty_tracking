@@ -12,6 +12,9 @@ module Mongoid
 
       alias_method_chain :changes, :relations
       alias_method_chain :changed?, :relations
+
+      cattr_accessor :relations_dirty_tracking_options
+      self.relations_dirty_tracking_options = {only: [], except: ['versions']}
     end
 
 
@@ -73,21 +76,20 @@ module Mongoid
     module ClassMethods
 
       def relations_dirty_tracking(options = {})
-        options[:only]    = [options[:only]].flatten if options[:only]
-        options[:except]  = [options[:except]].flatten if options[:except]
-        @relations_dirty_tracking_options = options
+        relations_dirty_tracking_options[:only] += [options[:only] || []].flatten.map(&:to_s)
+        relations_dirty_tracking_options[:except] += [options[:except] || []].flatten.map(&:to_s)
       end
 
 
       def track_relation?(rel_name)
-        options = @relations_dirty_tracking_options || {}
-        to_track = (options[:only].nil? && options[:except].nil?) \
-          || (options[:only] && options[:only].include?(rel_name.to_sym)) \
-          || (options[:except] && !options[:except].include?(rel_name.to_sym))
+        rel_name = rel_name.to_s
+        options = relations_dirty_tracking_options
+        to_track = (!options[:only].blank? && options[:only].include?(rel_name)) \
+          || (options[:only].blank? && !options[:except].include?(rel_name))
 
         to_track && [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
           Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
-          Mongoid::Relations::Referenced::In].include?(relations[rel_name.to_s].try(:relation))
+          Mongoid::Relations::Referenced::In].include?(relations[rel_name].try(:relation))
       end
 
 
