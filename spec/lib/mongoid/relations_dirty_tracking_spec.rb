@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+
 describe Mongoid::RelationsDirtyTracking do
   subject { TestDocument.create }
 
@@ -72,6 +73,16 @@ describe Mongoid::RelationsDirtyTracking do
           expect(subject.relation_changes['one_document']).to eq([old_attributes, @embedded_doc.attributes])
         end
       end
+    end
+
+    context "when just updated_at is changed on embedded document" do
+      before :each do
+        embedded_doc = Class.new(TestEmbeddedDocument) { include Mongoid::Timestamps }.new
+        subject.one_document = @embedded_doc
+        subject.save!
+        embedded_doc.updated_at = Time.now
+      end
+      its(:changed?) { should be_false }
     end
   end
 

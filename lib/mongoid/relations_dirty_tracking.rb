@@ -58,9 +58,9 @@ module Mongoid
       values = nil
       if meta = relations[rel_name]
         values = if meta.relation == Mongoid::Relations::Embedded::One
-          send(rel_name) && send(rel_name).attributes.clone
+          send(rel_name) && send(rel_name).attributes.clone.delete_if {|key, _| key == 'updated_at' }
         elsif meta.relation == Mongoid::Relations::Embedded::Many
-          send(rel_name) && send(rel_name).map {|child| child.attributes.clone }
+          send(rel_name) && send(rel_name).map {|child| child.attributes.clone.delete_if {|key, _| key == 'updated_at' } }
         elsif meta.relation == Mongoid::Relations::Referenced::One
           send(rel_name) && { "#{meta.key}" => send(rel_name)[meta.key] }
         elsif meta.relation == Mongoid::Relations::Referenced::Many
