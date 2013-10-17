@@ -2,6 +2,7 @@ require 'mongoid'
 require 'active_support/concern'
 require 'active_support/core_ext/module/aliasing'
 
+
 module Mongoid
   module RelationsDirtyTracking
     extend ActiveSupport::Concern
@@ -14,7 +15,11 @@ module Mongoid
       alias_method_chain :changed?, :relations
 
       cattr_accessor :relations_dirty_tracking_options
-      self.relations_dirty_tracking_options = {only: [], except: ['versions']}
+      self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
+
+      if self.include? Mongoid::Versioning
+        include Mongoid::RelationsDirtyTracking::Versioning
+      end
     end
 
 
