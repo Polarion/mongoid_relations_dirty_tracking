@@ -1,3 +1,5 @@
+require 'pry'
+
 module Mongoid
   module RelationsDirtyTracking
     module Versioning
@@ -13,15 +15,16 @@ module Mongoid
       def revise_with_relations
         previous = previous_revision
         if previous && (versioned_attributes_changed? || relations_changed?)
-          new_version = versions.build
+          new_version = versions.build(previous.versioned_attributes, without_protection: true)
 
-          new_version.assign_attributes(previous.versioned_attributes, without_protection: true) if versioned_attributes_changed?
-          new_version._id = nil
-          new_version.version = version || 1
+          rel_changes = relation_changes
 
           self.class.tracked_relations.each do |rel_name|
-            new_version[rel_name.to_sym] = preserve_versioned_relation(reflect_on_association(rel_name), previous[rel_name.to_sym])
+            # from some reason previous contaion also newly added relations
+            prev_value = rel_changes.include?(rel_name) ? rel_changes[rel_name][0] : previous[rel_name.to_sym]
+            new_version.send "#{rel_name}=", preserve_versioned_relation(reflect_on_association(rel_name), prev_value)
           end
+
 
           if version_max.present? && versions.length > version_max
             deleted = versions.first
