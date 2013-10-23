@@ -1,5 +1,3 @@
-require 'pry'
-
 module Mongoid
   module RelationsDirtyTracking
     module Versioning
