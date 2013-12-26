@@ -14,6 +14,7 @@ class TestDocument
 
   has_one     :one_related,     class_name: 'TestRelatedDocument'
   has_many    :many_related,    class_name: 'TestRelatedDocument'
+  has_and_belongs_to_many :many_to_many_related, class_name: 'TestRelatedDocument'
 end
 
 class TestEmbeddedDocument
