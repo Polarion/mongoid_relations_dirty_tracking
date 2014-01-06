@@ -252,6 +252,49 @@ describe Mongoid::RelationsDirtyTracking do
   end
 
 
+  context "has_and_belongs_to_many relationship" do
+    context "when adding document" do
+      before :each do
+        @related_doc = TestRelatedDocument.new
+        subject.many_to_many_related << @related_doc
+      end
+
+      its(:changed?)                { should be_true }
+      its(:children_changed?)       { should be_false }
+      its(:relations_changed?)      { should be_true }
+      its(:changed_with_relations?) { should be_true }
+      its(:changes_with_relations)  { should include(subject.relation_changes) }
+
+      describe "#relation_changes" do
+        it "returns array with differences" do
+          expect(subject.relation_changes['many_to_many_related']).to eq([[], [{'_id' => @related_doc._id}]])
+        end
+      end
+    end
+
+    context "when removing document" do
+      before :each do
+        @related_doc = TestRelatedDocument.new
+        subject.many_to_many_related << @related_doc
+        subject.save!
+        subject.many_to_many_related.delete  @related_doc
+      end
+
+      its(:changed?)                { should be_true }
+      its(:children_changed?)       { should be_false }
+      its(:relations_changed?)      { should be_true }
+      its(:changed_with_relations?) { should be_true }
+      its(:changes_with_relations)  { should include(subject.relation_changes) }
+
+      describe "#relation_changes" do
+        it "returns array with differences" do
+          expect(subject.relation_changes['many_to_many_related']).to eq([[{'_id' => @related_doc._id}], []])
+        end
+      end
+    end
+  end
+
+
   context "belongs_to relationship" do
     subject { TestRelatedDocument.create }
 

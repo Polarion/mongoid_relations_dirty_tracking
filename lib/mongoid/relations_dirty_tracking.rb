@@ -70,6 +70,8 @@ module Mongoid
           send(rel_name) && { "#{meta.key}" => send(rel_name)[meta.key] }
         elsif meta.relation == Mongoid::Relations::Referenced::Many
           send("#{rel_name.singularize}_ids").map {|id| { "#{meta.key}" => id } }
+        elsif meta.relation == Mongoid::Relations::Referenced::ManyToMany
+          send("#{rel_name.singularize}_ids").map {|id| { "#{meta.primary_key}" => id } }
         elsif meta.relation == Mongoid::Relations::Referenced::In
           send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
         end
@@ -94,7 +96,7 @@ module Mongoid
 
         to_track && [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
           Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
-          Mongoid::Relations::Referenced::In].include?(relations[rel_name].try(:relation))
+          Mongoid::Relations::Referenced::ManyToMany, Mongoid::Relations::Referenced::In].include?(relations[rel_name].try(:relation))
       end
 
 
