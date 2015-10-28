@@ -17,7 +17,7 @@ module Mongoid
       cattr_accessor :relations_dirty_tracking_options
       self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
 
-      if self.include? Mongoid::Versioning
+      if (defined? Mongoid::Versioning) && (self.include? Mongoid::Versioning)
         include Mongoid::RelationsDirtyTracking::Versioning
       end
     end
@@ -73,7 +73,7 @@ module Mongoid
         elsif meta.relation == Mongoid::Relations::Referenced::ManyToMany
           send("#{rel_name.singularize}_ids").map {|id| { "#{meta.primary_key}" => id } }
         elsif meta.relation == Mongoid::Relations::Referenced::In
-          send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
+          send(meta.name) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
         end
       end
       values
