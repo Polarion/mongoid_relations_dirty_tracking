@@ -69,7 +69,7 @@ describe Mongoid::RelationsDirtyTracking do
 
       describe "#relation_changes" do
         it "returns array with differences" do
-          old_attributes = @embedded_doc.attributes.clone.delete_if {|key, val| key == "title" }
+          old_attributes = @embedded_doc.attributes.clone.delete_if {|key, _| key == "title" }
           expect(subject.relation_changes['one_document']).to eq([old_attributes, @embedded_doc.attributes])
         end
       end
