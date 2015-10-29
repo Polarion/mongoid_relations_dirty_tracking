@@ -11,8 +11,8 @@ module Mongoid
       after_initialize  :store_relations_shadow
       after_save        :store_relations_shadow
 
-      alias_method_chain :changes, :relations
-      alias_method_chain :changed?, :relations
+      #alias_method_chain :changes, :relations
+      #alias_method_chain :changed?, :relations
 
       cattr_accessor :relations_dirty_tracking_options
       self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
@@ -49,12 +49,12 @@ module Mongoid
 
 
     def changed_with_relations?
-      changed_without_relations? or relations_changed?
+      changed? or relations_changed?
     end
 
 
     def changes_with_relations
-      (changes_without_relations || {}).merge relation_changes
+      (changes || {}).merge relation_changes
     end
 
 
