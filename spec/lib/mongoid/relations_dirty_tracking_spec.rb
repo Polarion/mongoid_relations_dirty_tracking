@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Mongoid::RelationsDirtyTracking do
   subject { TestDocument.create }
 
-  its(:changed_with_relations?)                { should be_false }
+  its(:changed_with_relations?) { should be_false }
   its(:children_changed?)       { should be_false }
   its(:relations_changed?)      { should be_false }
   its(:changed_with_relations?) { should be_false }
@@ -29,8 +29,6 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-
-
     context "when removing document" do
       before :each do
         @embedded_doc = TestEmbeddedDocument.new
@@ -51,8 +49,6 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-
-
     context "when changing value on embedded document" do
       before :each do
         @embedded_doc = TestEmbeddedDocument.new
@@ -73,24 +69,14 @@ describe Mongoid::RelationsDirtyTracking do
           expect(subject.relation_changes['one_document']).to eq([old_attributes, @embedded_doc.attributes])
         end
       end
-    end
 
-    context "when saving attribute of embedded document" do
-      before :each do
-        @embedded_doc = TestEmbeddedDocument.new
-        subject.one_document = @embedded_doc
-        subject.save!
-        subject.one_document.title = 'foobar'
-        subject.save!
-      end
-
-      describe "#relation_changes" do
-        it "document is saved, shouldnt" do
-          expect(TestDocument.first.one_document).to eq @embedded_doc
+      describe "after saving" do
+        it "document is updated" do
+          subject.save!
+          expect(TestDocument.last.one_document).to eq @embedded_doc
         end
       end
     end
-
     context "when just updated_at is changed on embedded document" do
       before :each do
         embedded_doc = Class.new(TestEmbeddedDocument) { include Mongoid::Timestamps }.new
@@ -121,8 +107,35 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
+    context "when updating a document's attributes" do
+      before :each do
+        @embedded_doc = TestEmbeddedDocument.new
+        subject.many_documents << @embedded_doc
+        subject.save!
+        subject.many_documents.first.title = 'foobar'
+      end
 
+      its(:changed_with_relations?)  { should be_truthy }
+      its(:children_changed?)        { should be_truthy }
+      its(:relations_changed?)       { should be_truthy }
+      its(:changed_with_relations?)  { should be_truthy }
+      its(:changes_with_relations)   { should include(subject.relation_changes) }
 
+      describe "#relation_changes" do
+        it "returns array with differences" do
+          old_attributes = @embedded_doc.attributes.clone.delete_if {|key, _| key == "title" }
+          expect(subject.relation_changes['many_documents']).to eq([[old_attributes], [@embedded_doc.attributes]])
+        end
+      end
+
+      describe "saving document" do
+        it "updates the attribute" do
+          subject.save!
+          expect(TestDocument.last.many_documents.first.title).to eq('foobar')
+        end
+      end
+
+    end
     context "when removing document" do
       before :each do
         @embedded_doc = TestEmbeddedDocument.new
@@ -145,7 +158,6 @@ describe Mongoid::RelationsDirtyTracking do
     end
   end
 
-
   context "has_one relationship" do
     context "when adding document" do
       before :each do
@@ -165,7 +177,6 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-
     context "when removing document" do
       before :each do
         @related_doc = TestRelatedDocument.new
@@ -186,7 +197,6 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-
     context "when changing document" do
       before :each do
         @related_doc = TestRelatedDocument.new
@@ -207,23 +217,30 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-
-    context "when changing value on referenced document" do
+    context "when changing embedded document's attribute" do
       before :each do
         @related_doc = TestRelatedDocument.new
         subject.one_related = @related_doc
         subject.save!
-        subject.one_related.title = "New title"
+        subject.one_related.title = 'foobar'
       end
 
-      its(:changed_with_relations?)                { should be_false }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_false }
-      its(:changed_with_relations?) { should be_false }
-      its(:relation_changes)        { should be_empty }
-    end
-  end
+      its(:changed_with_relations?) { should be_falsey }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_falsey }
+      its(:changed_with_relations?) { should be_falsey }
+      its(:changes_with_relations)  { should include(subject.relation_changes) }
 
+      describe "saving" do
+        it "updates document" do
+          subject.save!
+          expect(TestDocument.last.one_related.title).to eq 'foobar'
+        end
+      end
+
+    end
+
+  end
 
   context "has_many relationship" do
     context "when adding document" do
@@ -232,7 +249,7 @@ describe Mongoid::RelationsDirtyTracking do
         subject.many_related << @related_doc
       end
 
-      its(:changed_with_relations?)                { should be_true }
+      its(:changed_with_relations?) { should be_true }
       its(:children_changed?)       { should be_false }
       its(:relations_changed?)      { should be_true }
       its(:changed_with_relations?) { should be_true }
@@ -265,8 +282,31 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-  end
 
+    context "when updating document" do
+      before :each do
+        @related_doc = TestRelatedDocument.new
+        subject.many_related << @related_doc
+        subject.save!
+        subject.many_related.first.title = 'foobar'
+      end
+
+      its(:changed_with_relations?) { should be_truthy }
+      its(:children_changed?)       { should be_truthy }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
+      its(:changes_with_relations)  { should include(subject.relation_changes) }
+
+      describe "many_related" do
+        it "updates attribute" do
+          save!
+          expect(TestDocument.last.many_related.first.title).to eq 'foobar'
+        end
+      end
+
+    end
+
+  end
 
   context "has_and_belongs_to_many relationship" do
     context "when adding document" do
@@ -310,7 +350,6 @@ describe Mongoid::RelationsDirtyTracking do
     end
   end
 
-
   context "belongs_to relationship" do
     subject { TestRelatedDocument.create }
 
@@ -353,8 +392,8 @@ describe Mongoid::RelationsDirtyTracking do
         end
       end
     end
-  end
 
+  end
 
   describe ".track_relation?" do
     context "with only options" do
@@ -371,7 +410,6 @@ describe Mongoid::RelationsDirtyTracking do
       end
     end
   end
-
 
   describe "by befault the versions relation is not tracked" do
     context "when not called 'relations_dirty_tracking'" do
@@ -395,4 +433,5 @@ describe Mongoid::RelationsDirtyTracking do
       end
     end
   end
+
 end
