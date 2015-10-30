@@ -11,13 +11,13 @@ module Mongoid
       after_initialize  :store_relations_shadow
       after_save        :store_relations_shadow
 
-      alias_method_chain :changes, :relations
-      alias_method_chain :changed?, :relations
+      #alias_method_chain :changes, :relations
+      #alias_method_chain :changed?, :relations
 
       cattr_accessor :relations_dirty_tracking_options
       self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
 
-      if self.include? Mongoid::Versioning
+      if (defined? Mongoid::Versioning) && (self.include? Mongoid::Versioning)
         include Mongoid::RelationsDirtyTracking::Versioning
       end
     end
@@ -49,12 +49,12 @@ module Mongoid
 
 
     def changed_with_relations?
-      changed_without_relations? or relations_changed?
+      changed? or relations_changed?
     end
 
 
     def changes_with_relations
-      (changes_without_relations || {}).merge relation_changes
+      (changes || {}).merge relation_changes
     end
 
 
@@ -73,7 +73,7 @@ module Mongoid
         elsif meta.relation == Mongoid::Relations::Referenced::ManyToMany
           send("#{rel_name.singularize}_ids").map {|id| { "#{meta.primary_key}" => id } }
         elsif meta.relation == Mongoid::Relations::Referenced::In
-          send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
+          send(meta.name) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
         end
       end
       values
