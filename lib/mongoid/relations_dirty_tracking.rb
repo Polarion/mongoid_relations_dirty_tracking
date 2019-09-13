@@ -16,10 +16,6 @@ module Mongoid
 
       cattr_accessor :relations_dirty_tracking_options
       self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
-
-      if self.include? Mongoid::Versioning
-        include Mongoid::RelationsDirtyTracking::Versioning
-      end
     end
 
 
