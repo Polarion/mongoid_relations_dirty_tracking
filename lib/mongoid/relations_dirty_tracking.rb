@@ -58,17 +58,17 @@ module Mongoid
       rel_name = rel_name.to_s
       values = nil
       if meta = relations[rel_name]
-        values = if meta.relation == Mongoid::Relations::Embedded::One
+        values = if meta.relation == Mongoid::Association::Embedded::EmbedsOne
           send(rel_name) && send(rel_name).attributes.clone.delete_if {|key, _| key == 'updated_at' }
-        elsif meta.relation == Mongoid::Relations::Embedded::Many
+        elsif meta.relation == Mongoid::Association::Embedded::EmbedsMany
           send(rel_name) && send(rel_name).map {|child| child.attributes.clone.delete_if {|key, _| key == 'updated_at' } }
-        elsif meta.relation == Mongoid::Relations::Referenced::One
+        elsif meta.relation == Mongoid::Association::Referenced::HasOne
           send(rel_name) && { "#{meta.key}" => send(rel_name)[meta.key] }
-        elsif meta.relation == Mongoid::Relations::Referenced::Many
+        elsif meta.relation == Mongoid::Association::Referenced::HasMany
           send("#{rel_name.singularize}_ids").map {|id| { "#{meta.key}" => id } }
-        elsif meta.relation == Mongoid::Relations::Referenced::ManyToMany
+        elsif meta.relation == Mongoid::Association::Referenced::HasAndBelongsToMany
           send("#{rel_name.singularize}_ids").map {|id| { "#{meta.primary_key}" => id } }
-        elsif meta.relation == Mongoid::Relations::Referenced::In
+        elsif meta.relation == Mongoid::Association::Referenced::BelongsTo
           send(meta.foreign_key) && { "#{meta.foreign_key}" => send(meta.foreign_key)}
         end
       end
@@ -90,9 +90,9 @@ module Mongoid
         to_track = (!options[:only].blank? && options[:only].include?(rel_name)) \
           || (options[:only].blank? && !options[:except].include?(rel_name))
 
-        to_track && [Mongoid::Relations::Embedded::One, Mongoid::Relations::Embedded::Many,
-          Mongoid::Relations::Referenced::One, Mongoid::Relations::Referenced::Many,
-          Mongoid::Relations::Referenced::ManyToMany, Mongoid::Relations::Referenced::In].include?(relations[rel_name].try(:relation))
+        to_track && [Mongoid::Association::Embedded::EmbedsOne, Mongoid::Association::Embedded::EmbedsMany,
+          Mongoid::Association::Referenced::HasOne, Mongoid::Association::Referenced::HasMany,
+          Mongoid::Association::Referenced::HasAndBelongsToMany, Mongoid::Association::Referenced::BelongsTo].include?(relations[rel_name].try(:relation))
       end
 
 
