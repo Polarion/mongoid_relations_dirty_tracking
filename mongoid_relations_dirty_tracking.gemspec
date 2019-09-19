@@ -11,13 +11,13 @@ Gem::Specification.new do |spec|
   spec.homepage      = "http://github.com/versative/relations_dirty_tracking"
   spec.license       = "MIT"
 
-  spec.add_runtime_dependency 'activesupport', '~> 3.0'
-  spec.add_runtime_dependency 'mongoid', '>= 3.1.0', '< 4.0'
+  spec.add_runtime_dependency 'activesupport', '~> 5.0'
+  spec.add_runtime_dependency 'mongoid', '>= 7.0'
 
-  spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec", "~> 2.8"
-  spec.add_development_dependency "pry"
+  spec.add_development_dependency "rspec", '~> 3.8.0'
+  spec.add_development_dependency "rspec-its", '~> 1.3'
+  spec.add_development_dependency "pry-byebug"
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
