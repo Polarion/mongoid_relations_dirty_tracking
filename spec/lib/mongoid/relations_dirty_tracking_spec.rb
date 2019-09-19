@@ -4,10 +4,10 @@ require 'spec_helper'
 describe Mongoid::RelationsDirtyTracking do
   subject { TestDocument.create }
 
-  its(:changed?)                { should be_false }
-  its(:children_changed?)       { should be_false }
-  its(:relations_changed?)      { should be_false }
-  its(:changed_with_relations?) { should be_false }
+  its(:changed?)                { should be_falsey }
+  its(:children_changed?)       { should be_falsey }
+  its(:relations_changed?)      { should be_falsey }
+  its(:changed_with_relations?) { should be_falsey }
 
 
   context "embeds_one relationship" do
@@ -17,10 +17,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_document = @embedded_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -39,10 +39,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_document = nil
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -61,10 +61,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_document.title = 'foobar'
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_true }
-      its(:relations_changed?)       { should be_true }
-      its(:changed_with_relations?)  { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_truthy }
+      its(:relations_changed?)       { should be_truthy }
+      its(:changed_with_relations?)  { should be_truthy }
       its(:changes_with_relations)   { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -82,7 +82,7 @@ describe Mongoid::RelationsDirtyTracking do
         subject.save!
         embedded_doc.updated_at = Time.now
       end
-      its(:changed?) { should be_false }
+      its(:changed?) { should be_falsey }
     end
   end
 
@@ -93,10 +93,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.many_documents << @embedded_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)       { should be_true }
-      its(:changed_with_relations?)  { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)       { should be_truthy }
+      its(:changed_with_relations?)  { should be_truthy }
       its(:changes_with_relations)   { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -115,10 +115,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.many_documents.delete @embedded_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -137,10 +137,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_related = @related_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -158,10 +158,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_related = nil
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -179,10 +179,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_related = @another_related_doc = TestRelatedDocument.new
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -200,10 +200,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.one_related.title = "New title"
       end
 
-      its(:changed?)                { should be_false }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_false }
-      its(:changed_with_relations?) { should be_false }
+      its(:changed?)                { should be_falsey }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_falsey }
+      its(:changed_with_relations?) { should be_falsey }
       its(:relation_changes)        { should be_empty }
     end
   end
@@ -216,10 +216,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.many_related << @related_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -234,13 +234,13 @@ describe Mongoid::RelationsDirtyTracking do
         @related_doc = TestRelatedDocument.new
         subject.many_related << @related_doc
         subject.save!
-        subject.many_related.delete  @related_doc
+        subject.many_related.delete(@related_doc)
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -259,10 +259,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.many_to_many_related << @related_doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -277,13 +277,13 @@ describe Mongoid::RelationsDirtyTracking do
         @related_doc = TestRelatedDocument.new
         subject.many_to_many_related << @related_doc
         subject.save!
-        subject.many_to_many_related.delete  @related_doc
+        subject.many_to_many_related.delete(@related_doc)
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -304,10 +304,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.test_document = @doc
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -325,10 +325,10 @@ describe Mongoid::RelationsDirtyTracking do
         subject.test_document = nil
       end
 
-      its(:changed?)                { should be_true }
-      its(:children_changed?)       { should be_false }
-      its(:relations_changed?)      { should be_true }
-      its(:changed_with_relations?) { should be_true }
+      its(:changed?)                { should be_truthy }
+      its(:children_changed?)       { should be_falsey }
+      its(:relations_changed?)      { should be_truthy }
+      its(:changed_with_relations?) { should be_truthy }
       its(:changes_with_relations)  { should include(subject.relation_changes) }
 
       describe "#relation_changes" do
@@ -343,15 +343,15 @@ describe Mongoid::RelationsDirtyTracking do
   describe ".track_relation?" do
     context "with only options" do
       it "do tracks only specified relations" do
-        expect(TestDocumentWithOnlyOption.track_relation? :many_documents).to be_true
-        expect(TestDocumentWithOnlyOption.track_relation? :one_related).to be_false
+        expect(TestDocumentWithOnlyOption.track_relation? :many_documents).to be_truthy
+        expect(TestDocumentWithOnlyOption.track_relation? :one_related).to be_falsey
       end
     end
 
     context "with except options" do
       it "do no track excluded relations" do
-        expect(TestDocumentWithExceptOption.track_relation? 'many_documents').to be_false
-        expect(TestDocumentWithExceptOption.track_relation? 'one_related').to be_true
+        expect(TestDocumentWithExceptOption.track_relation? 'many_documents').to be_falsey
+        expect(TestDocumentWithExceptOption.track_relation? 'one_related').to be_truthy
       end
     end
   end
