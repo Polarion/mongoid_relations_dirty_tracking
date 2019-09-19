@@ -4,6 +4,7 @@ require 'mongoid'
 require 'mongoid/relations_dirty_tracking'
 
 require 'rspec'
+require 'rspec/its'
 
 class TestDocument
   include Mongoid::Document
@@ -29,7 +30,7 @@ class TestRelatedDocument
   include Mongoid::Document
   include Mongoid::RelationsDirtyTracking
 
-  belongs_to :test_document, inverse_of: :one_related
+  belongs_to :test_document, inverse_of: :one_related, optional: true
 
   field :title, type: String
 end
