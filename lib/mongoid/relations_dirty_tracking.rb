@@ -12,8 +12,8 @@ module Mongoid
       after_initialize  :store_relations_shadow
       after_save        :store_relations_shadow
 
-      alias_method_chain :changes, :relations
-      alias_method_chain :changed?, :relations
+      #alias_method_chain :changes, :relations
+      #alias_method_chain :changed?, :relations
 
       cattr_accessor :relations_dirty_tracking_options
       self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
