@@ -1,0 +1,76 @@
+services: mongodb
+
+gemfile:
+  - spec/gemfiles/Gemfile.rails32
+  - spec/gemfiles/Gemfile.rails40
+  - spec/gemfiles/Gemfile.rails41
+  - spec/gemfiles/Gemfile.rails42
+  - spec/gemfiles/Gemfile.rails50
+  - spec/gemfiles/Gemfile.rails51
+  - spec/gemfiles/Gemfile.rails52
+  - spec/gemfiles/Gemfile.rails60
+  - spec/gemfiles/Gemfile.master
+
+rvm:
+  - 2.1.10
+  - 2.2.10
+  - 2.3.8
+  - 2.4.6
+  - 2.5.5
+  - 2.6.3
+
+matrix:
+  fast_finish: true
+
+  exclude:
+    - gemfile: 'spec/gemfiles/Gemfile.rails32'
+      rvm: 2.2.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails32'
+      rvm: 2.3.8
+    - gemfile: 'spec/gemfiles/Gemfile.rails32'
+      rvm: 2.4.6
+    - gemfile: 'spec/gemfiles/Gemfile.rails32'
+      rvm: 2.5.5
+    - gemfile: 'spec/gemfiles/Gemfile.rails32'
+      rvm: 2.6.3
+    - gemfile: 'spec/gemfiles/Gemfile.rails40'
+      rvm: 2.4.6
+    - gemfile: 'spec/gemfiles/Gemfile.rails40'
+      rvm: 2.5.5
+    - gemfile: 'spec/gemfiles/Gemfile.rails40'
+      rvm: 2.6.3
+    - gemfile: 'spec/gemfiles/Gemfile.rails41'
+      rvm: 2.4.6
+    - gemfile: 'spec/gemfiles/Gemfile.rails41'
+      rvm: 2.5.5
+    - gemfile: 'spec/gemfiles/Gemfile.rails41'
+      rvm: 2.6.3
+    - gemfile: 'spec/gemfiles/Gemfile.rails50'
+      rvm: 2.0.0
+    - gemfile: 'spec/gemfiles/Gemfile.rails50'
+      rvm: 2.1.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails50'
+      rvm: 2.6.3
+    - gemfile: 'spec/gemfiles/Gemfile.rails51'
+      rvm: 2.0.0
+    - gemfile: 'spec/gemfiles/Gemfile.rails51'
+      rvm: 2.1.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails51'
+      rvm: 2.6.3
+    - gemfile: 'spec/gemfiles/Gemfile.rails52'
+      rvm: 2.0.0
+    - gemfile: 'spec/gemfiles/Gemfile.rails52'
+      rvm: 2.1.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails60'
+      rvm: 2.0.0
+    - gemfile: 'spec/gemfiles/Gemfile.rails60'
+      rvm: 2.1.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails60'
+      rvm: 2.2.10
+    - gemfile: 'spec/gemfiles/Gemfile.rails60'
+      rvm: 2.3.8
+    - gemfile: 'spec/gemfiles/Gemfile.rails60'
+      rvm: 2.4.6
+
+  allow_failures:
+    - gemfile: 'spec/gemfiles/Gemfile.master'
